@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sinric Device Controller</title>
+    <style>
+      body { font-family: Arial, Helvetica, sans-serif; max-width: 900px; margin: 24px auto; }
+      .device { border: 1px solid #ddd; padding: 12px; margin-bottom: 12px; border-radius: 6px; }
+      .controls { margin-top: 8px; }
+      button { margin-right: 8px; }
+      input[type=text] { width: 360px; }
+      pre { background:#f7f7f7; padding:8px; overflow:auto }
+    </style>
+  </head>
+  <body>
+    <h1>Sinric Device Controller</h1>
+
+    <div class="device" id="deviceA">
+      <strong>Device A</strong><br />
+      Device ID: <input type="text" id="deviceAId" placeholder="Enter deviceId" />
+      <div class="controls">
+        <button onclick="sendAction('A','On')">Turn On</button>
+        <button onclick="sendAction('A','Off')">Turn Off</button>
+        <span id="statusA"></span>
+      </div>
+      <pre id="resultA"></pre>
+    </div>
+
+    <div class="device" id="deviceB">
+      <strong>Device B</strong><br />
+      Device ID: <input type="text" id="deviceBId" placeholder="Enter deviceId" />
+      <div class="controls">
+        <button onclick="sendAction('B','On')">Turn On</button>
+        <button onclick="sendAction('B','Off')">Turn Off</button>
+        <span id="statusB"></span>
+      </div>
+      <pre id="resultB"></pre>
+    </div>
+
+    <div class="device" id="allDevices">
+      <strong>All Devices</strong>
+      <div class="controls">
+        <button id="allOnBtn">Turn All On</button>
+        <button id="allOffBtn">Turn All Off</button>
+        <span id="statusAll"></span>
+      </div>
+      <pre id="resultAll"></pre>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
