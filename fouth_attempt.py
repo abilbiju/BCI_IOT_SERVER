@@ -377,19 +377,33 @@ def index():
 								<a href="/device{{ d.index }}/on"><button class="btn on">ON</button></a>
 								<a href="/device{{ d.index }}/off"><button class="btn off">OFF</button></a>
 							</div>
-							<form action="/update_device" method="post" style="margin-top:8px;display:flex;gap:8px;flex-direction:column">
-								<input type="hidden" name="index" value="{{ d.index }}" />
-								<div style="display:flex;gap:8px">
-									<input type="text" name="device_id" value="{{ d.id }}" placeholder="Device ID" style="flex:1;padding:8px;border:1px solid #e6eefc;border-radius:6px" />
-									<input type="text" name="device_name" value="{{ d.name }}" placeholder="Friendly name" style="flex:1;padding:8px;border:1px solid #e6eefc;border-radius:6px" />
+							<!-- Actions dropdown to avoid accidental touches -->
+							<div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end;align-items:flex-start;position:relative">
+								<form id="update-form-{{ d.index }}" action="/update_device" method="post" style="flex:1">
+									<input type="hidden" name="index" value="{{ d.index }}" />
+									<!-- Edit panel is hidden by default to prevent accidental edits -->
+									<div id="edit-panel-{{ d.index }}" style="display:none;flex-direction:column;gap:8px">
+										<div style="display:flex;gap:8px">
+											<input type="text" name="device_id" value="{{ d.id }}" placeholder="Device ID" style="flex:1;padding:8px;border:1px solid #e6eefc;border-radius:6px" />
+											<input type="text" name="device_name" value="{{ d.name }}" placeholder="Friendly name" style="flex:1;padding:8px;border:1px solid #e6eefc;border-radius:6px" />
+										</div>
+										<div style="display:flex;gap:8px;justify-content:flex-end">
+											<button class="btn on" type="submit">Save</button>
+											<button class="btn" type="button" onclick="toggleEdit({{ d.index }})">Cancel</button>
+										</div>
+									</div>
+								</form>
+								<!-- Actions menu -->
+								<div style="position:relative">
+									<button class="btn" type="button" onclick="toggleMenu({{ d.index }})">Actions ▾</button>
+									<div id="menu-{{ d.index }}" style="display:none;position:absolute;right:0;background:var(--card);border:1px solid #e6eefc;padding:8px;border-radius:6px;box-shadow:0 4px 10px rgba(2,6,23,0.08);z-index:50">
+										<div style="margin-bottom:6px"><button class="btn" type="button" onclick="toggleEdit({{ d.index }});toggleMenu({{ d.index }})">Edit details</button></div>
+										<div>
+											<button class="btn off" type="button" onclick="confirmRemove({{ d.index }}, '{{ d.name }}')">Remove</button>
+										</div>
+									</div>
 								</div>
-								<div style="display:flex;gap:8px;justify-content:flex-end">
-									<button class="btn on" type="submit">Save</button>
-									<form action="/remove_device/{{ d.index }}" method="post" style="display:inline">
-										<button class="btn off" type="submit">Remove</button>
-									</form>
-								</div>
-							</form>
+							</div>
 						</div>
 					{% endfor %}
 					<div class="card">
@@ -414,21 +428,58 @@ def index():
 							</div>
 						</form>
 					</div>
-				</div>
-				<div class="panel">
-					<h3 style="margin-top:0">Logs</h3>
-					<div class="log">
-						{% for log in logs %}
-							{{ log }}
-						{% endfor %}
+
+					<!-- Logs moved here so they appear below the device list -->
+					<div class="panel" style="margin-top:12px">
+						<h3 style="margin-top:0">Logs</h3>
+						<div class="log">
+							{% for log in logs %}
+								{{ log }}
+							{% endfor %}
+						</div>
+						<div class="footer small">Local IP: {{ local_ip }}</div>
 					</div>
-					<div class="footer small">Local IP: {{ local_ip }}</div>
 				</div>
 			</div>
 		</div>
+
+			</div>
+			<script>
+			function toggleMenu(idx){
+			  var m=document.getElementById('menu-'+idx);
+			  if(!m) return;
+			  m.style.display = (m.style.display==='block') ? 'none' : 'block';
+			}
+			function toggleEdit(idx){
+			  var p=document.getElementById('edit-panel-'+idx);
+			  if(!p) return;
+			  // use flex when visible to keep layout
+			  p.style.display = (p.style.display==='flex' || p.style.display==='block') ? 'none' : 'flex';
+			}
+			function confirmRemove(idx, name){
+			  if(!confirm('Remove device '+name+'? This cannot be undone.')) return;
+			  var form = document.createElement('form');
+			  form.method = 'post';
+			  form.action = '/remove_device/' + idx;
+			  document.body.appendChild(form);
+			  form.submit();
+			}
+			// close open menus when clicking outside
+			document.addEventListener('click', function(e){
+			  var menus = document.querySelectorAll('[id^="menu-"]');
+			  menus.forEach(function(menu){
+				var btn = menu.previousElementSibling;
+				if(!menu.contains(e.target) && !(btn && btn.contains(e.target))){
+				  menu.style.display = 'none';
+				}
+			  });
+			});
+			</script>
 	</body>
 	</html>
 	""", logs=LOGS, device1_name=DEVICE_1_NAME, device2_name=DEVICE_2_NAME, local_ip=get_local_ip(), devices=devices)
+
+    
 
 
 @app.route("/device1/<state>")
