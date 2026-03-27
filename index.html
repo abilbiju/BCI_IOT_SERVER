@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EEG Electrode 3D Model</title>
+
+<script type="module"
+src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+</script>
+
+<style>
+body{
+margin:0;
+background:#f5f5f5;
+font-family:Arial, sans-serif;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+model-viewer{
+width:600px;
+height:600px;
+background:white;
+border-radius:15px;
+box-shadow:0 5px 20px rgba(0,0,0,0.15);
+}
+</style>
+
+</head>
+
+<body>
+
+<model-viewer
+src="head.glb"
+alt="3D EEG Head Model"
+
+auto-rotate
+camera-controls
+
+shadow-intensity="1"
+
+exposure="1"
+
+environment-image="neutral"
+
+>
+
+</model-viewer>
+
+</body>
+</html>
